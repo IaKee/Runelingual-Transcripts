@@ -1,9 +1,13 @@
 import os
 import json
 import sqlite3
+import sys
+script_dir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(script_dir)
+sys.path.append(os.path.join(script_dir, '.'))
+# from update_english_transcript import common
 import common
-
-
+    
 def connect_to_db(db_file):
     conn = sqlite3.connect(db_file)
     return conn, conn.cursor()
@@ -14,6 +18,7 @@ def create_table(cursor):
         CREATE TABLE IF NOT EXISTS transcript (
             key INTEGER PRIMARY KEY, 
             {common.COLUMN_NAME_ENGLISH} TEXT,
+            {common.COLUMN_NAME_TRANSLATION} TEXT,
             {common.COLUMN_NAME_CATEGORY} TEXT,
             {common.COLUMN_NAME_SUB_CATEGORY} TEXT,
             {common.COLUMN_NAME_SOURCE} TEXT,
@@ -170,7 +175,8 @@ def insert_record(c, record):
 
 def dictListToSQL(dict_data, 
                   skip_if_same_value_in_column = [common.COLUMN_NAME_ENGLISH, common.COLUMN_NAME_CATEGORY,
-                                                common.COLUMN_NAME_SUB_CATEGORY, common.COLUMN_NAME_SOURCE]):
+                                                common.COLUMN_NAME_SUB_CATEGORY, common.COLUMN_NAME_SOURCE],
+                                                database_path = common.DATABASE_PATH):
     """
     inserts given data to transcript table
     args:
@@ -179,7 +185,13 @@ def dictListToSQL(dict_data,
     skip_if_same_value_in_column: list of column names to check if the record already exists in the table
                                 will only store if no records matches all values in the stated column
     """
-    conn, c = connect_to_db(common.DATABASE_PATH)
+    for dict in dict_data: # todo: test this
+        for key, value in dict.items():
+            if value is not None:
+                value = replace_special_spaces(value)
+        
+
+    conn, c = connect_to_db(database_path)
 
     #create_table if it doesn't exist
     create_table(c)
@@ -197,26 +209,62 @@ def addAllTSVToSQL(TSVDir):
     create_table(c)
     
     # iterate through all csv files in the directory
-    for file in os.listdir(TSVDir):
-        print("Adding file:", file)
-        # open each files
-        with open(TSVDir + file, 'r') as f:
-            for i,line in enumerate(f):
-                if line in ['', None, '\n']: # skip empty lines
-                    continue
-                line = line.strip().split('\t')
-                if i == 0: # the first line is the column names
-                    column_names = line
-                else: # the rest of the lines are records
-                    record = {key : value for key, value in zip(column_names, line)}
-                    record.update({common.COLUMN_NAME_DATE_MODIFIED:common.TODAYS_DATE})
-                    if not check_record_exists(c, {common.COLUMN_NAME_ENGLISH:record[common.COLUMN_NAME_ENGLISH],
-                                                    common.COLUMN_NAME_CATEGORY:record[common.COLUMN_NAME_CATEGORY],
-                                                    common.COLUMN_NAME_SUB_CATEGORY:record[common.COLUMN_NAME_SUB_CATEGORY]}):
-                        insert_record(c, record)
+    for root, dirs, files in os.walk(TSVDir):
+        for file in files:
+            added_records = 0
+            # open each files
+            with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
+
+                for i,line in enumerate(f):
+                    line = replace_special_spaces(line)
+                    if line.strip() in ['', None, '\n']: # skip empty lines
+                        continue
+                    line = line.replace('\n','').split('\t')
+                    if i == 0: # the first line is the column names
+                        column_names = line
+                    else: # the rest of the lines are records
+                        record = {key : value for key, value in zip(column_names, line)}
+                        record.update({common.COLUMN_NAME_DATE_MODIFIED:common.TODAYS_DATE})
+                        if not check_record_exists(c, {common.COLUMN_NAME_ENGLISH:record[common.COLUMN_NAME_ENGLISH],
+                                                        common.COLUMN_NAME_CATEGORY:record[common.COLUMN_NAME_CATEGORY],
+                                                        common.COLUMN_NAME_SUB_CATEGORY:record[common.COLUMN_NAME_SUB_CATEGORY],
+                                                        common.COLUMN_NAME_SOURCE:record[common.COLUMN_NAME_SOURCE]}):
+                            added_records += 1
+                            insert_record(c, record)
+            print("Added", added_records, "records from file: " + file)
+
     conn.commit()
     print("Added all manually created CSV files to SQL")
 
+def replace_special_spaces(input_str):
+    if input_str is None:
+        return None
+
+    special_spaces = [32, 160, 8195, 8194, 8201, 8202, 8203, 12288]
+    result = []
+
+    for char in input_str:
+        code_point = ord(char)
+        if code_point in special_spaces:
+            result.append(' ')
+        else:
+            result.append(char)
+
+    return ''.join(result)
+
+#for testing
+def print_char_ids(input_str):
+    for char in input_str:
+        print(f"Character: {char}, ID: {ord(char)}")
+
 if __name__ == "__main__":
     #jsonFileToSQL(common.CACHE_UPDATED_PATH)
-    addAllTSVToSQL(common.CSV_FILE_DIR)
+    #addAllTSVToSQL(common.MANUAL_FILE_DIR)
+    original = "Senntisten Teleport"
+    replaced = replace_special_spaces(original) # should return "hello world"
+    print(original == replaced)
+    print(original + ":")
+    print_char_ids(original)
+
+    print(replaced + ":")
+    print_char_ids(replaced)

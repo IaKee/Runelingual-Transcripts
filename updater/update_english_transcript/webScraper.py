@@ -9,6 +9,7 @@ import re
 import sqlite3
 import json
 
+
 def get_data_from_wiki_page(url, category):
     """
     Scrapes data from the OSRS wiki and returns the data in a list of dictionary
@@ -41,6 +42,14 @@ def get_data_from_wiki_page(url, category):
     if category == common.WIKI_URL["npc_dialogue"] or category == common.WIKI_URL["pet_dialogue"]:
         li_elements = main_content.find_all('li')
         entity_name = soup.find("h1", class_="firstHeading").get_text().replace("Dialogue for ", "").strip()
+        
+        # To deal with npc names that have () at the end, such as "Banker (Al Kharid)". Will fetch true names from their npc page
+        pattern = r'\(.+\)$'
+        if re.search(pattern, entity_name):
+            entity_name = getTrueNameFromDialogue(soup)
+            if entity_name is None:
+                print(f"Failed to fetch the true name for {entity_name}.")
+                entity_name = soup.find("h1", class_="firstHeading").get_text().strip()
 
     
         for li in li_elements:
@@ -134,6 +143,37 @@ def get_data_from_wiki_page(url, category):
                         common.COLUMN_NAME_WIKI_URL:url})
 
     return data
+
+def getTrueNameFromDialogue(soup):
+    # Find the part that starts with "This page contains the dialogue of", which contains a link to the npc, which holds the display name (true name) of the npc
+    first_href_link = None
+    for td in soup.find_all('td'):
+        if td.text.strip().startswith("This page contains the dialogue of"):
+            a_tag = td.find('a')
+            if a_tag and a_tag.has_attr('href'):
+                first_href_link = a_tag['href']
+                break
+
+    if first_href_link is None:
+        print("No 'This page contains dialogue of ... ' found in the dialogue page.")
+
+    # Fetch the webpage content
+    response = requests.get(common.WIKI_URL["base"] + first_href_link)
+
+    # Check if the request was successful
+    if response.status_code != 200:
+        print(f"Failed to fetch the webpage content for {first_href_link}.")
+        return []
+    
+    # Step 2: Parse the webpage content
+    soup = BeautifulSoup(response.text, 'html.parser')
+    main_content = soup.find('div', class_='mw-parser-output')
+    if not main_content:
+        return []
+    # Find the th tag with the class "infobox-header"
+    entity_name = soup.find('th', class_='infobox-header').get_text()
+    
+    return entity_name
 
 def get_all_urls_of_entity(base_url, url):
     """
@@ -231,12 +271,16 @@ def scrape_wiki():
 
     return data
 
+def has_alphabet(s):
+    return any(c.isalpha() for c in s)
+
 def scrape_chisel(url, examine_url):
     # Step 1: Fetch the main information from the chisel website
     response = requests.get(url)
     if response.status_code != 200:
         print(f"Failed to fetch the webpage content for {url}.")
         return []
+    print("fetching from : ", url)
     soup = BeautifulSoup(response.text, 'html.parser')
     text = soup.text
     
@@ -271,11 +315,11 @@ def scrape_chisel(url, examine_url):
     for entity in category_obj:
         # get id
         id = entity.get('id')
-        if id in [None, 'null', '']:
+        if id in [None, 'null', 'Null', '']:
             continue
         # get name
         name = entity.get(common.CHISEL_CATEGORY_NAME["name"])
-        if name in [None, 'null', '']:
+        if name in [None, 'null', 'Null', '']:
             continue
         # Remove the color tags from the name
         pattern = r'<col=[\w\d]+?>|</col>'
@@ -284,16 +328,31 @@ def scrape_chisel(url, examine_url):
         # get examine
         if sub_category == common.ITEM_KEY:
             examine = entity.get(common.CHISEL_CATEGORY_NAME["examine"])
-            if examine in [None, 'null', '']:
+            if examine in [None, 'null', 'Null', '']:
                 examine = ''
         else:
             examine = exa_obj.get(str(id))
-            if examine in [None, 'null', '']:
+            if examine in [None, 'null', 'Null', '']:
                 examine = ''
 
         # get options
         options = entity.get(common.CHISEL_CATEGORY_NAME["action_"+sub_category])
-        if options in [None, 'null', '']:
+        item_option_on_ground= []
+        if sub_category == common.ITEM_KEY:
+            # get worn options
+            option_worn_dict = entity.get("params")
+            if option_worn_dict:
+                option_worn = [i[1] for i in option_worn_dict.items()
+                               if isinstance(i[1], str) and has_alphabet(i[1]) and len(i[1].split(" ")) < 10 and not i[1].endswith('.')
+                               and i[0] != "1733" and i[0] != "1784" and i[0] != "602"]
+                options.extend(option_worn)
+
+            # get options on ground
+            item_option_on_ground = entity.get("actWorld")
+            if item_option_on_ground:
+                item_option_on_ground = [k for k in item_option_on_ground if k != "Take" and k != "Light"]
+
+        if options in [None, 'null', 'Null', '']:
             options = []
 
         link = ''
@@ -343,7 +402,7 @@ def scrape_chisel(url, examine_url):
             data_examine.append(examine_record)
         
         for option in options:
-            if option in [None, 'null', '']:
+            if option in [None, 'null', 'Null', '']:
                 continue
             option_record = {common.COLUMN_NAME_ENGLISH: option,
                             common.COLUMN_NAME_CATEGORY: category_action,
@@ -352,11 +411,27 @@ def scrape_chisel(url, examine_url):
                             common.COLUMN_NAME_DATE_MODIFIED: common.TODAYS_DATE,
                             common.COLUMN_NAME_WIKI_URL: link}
             data_option.append(option_record)
-    
+        
+        for option_ground in item_option_on_ground:
+            if option_ground in [None, 'null', 'Null', '']:
+                continue
+            option_record = {common.COLUMN_NAME_ENGLISH: option_ground,
+                            common.COLUMN_NAME_CATEGORY: common.ITEM_GROUND_OPTION_VAR_NAME,
+                            common.COLUMN_NAME_SUB_CATEGORY: sub_category,
+                            common.COLUMN_NAME_SOURCE: name,
+                            common.COLUMN_NAME_DATE_MODIFIED: common.TODAYS_DATE,
+                            common.COLUMN_NAME_WIKI_URL: link}
+            data_option.append(option_record)
+
     return data_name, data_examine, data_option
 
 if __name__ == "__main__":
-    scrape_wiki()
-    #scrape_chisel(common.CHISEL_URL["item_main"], common.CHISEL_URL["items_main"])
+    #scrape_wiki()
+    #item_names, item_examines, item_options = scrape_chisel(common.CHISEL_URL["item_main"], common.CHISEL_URL["item_main"])
+    
+    url = "https://oldschool.runescape.wiki/w/Transcript:Banker_(Keldagrim)"
+    dialogue_data = get_data_from_wiki_page(url, common.WIKI_URL["npc_dialogue"])
+    print(dialogue_data)
+    
     #scrape_chisel(common.CHISEL_URL["npc_main"], common.CHISEL_URL["npc_examine"])
     #scrape_chisel(common.CHISEL_URL["object_main"], common.CHISEL_URL["object_examine"])
