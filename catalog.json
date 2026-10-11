@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-10-11T19:11:37+00:00",
+  "note": "DUMMY packs for download-manager simulation. Content is random bytes.",
+  "languages": {
+    "pt_br": {
+      "packs": [
+        {
+          "id": "pt_br-texts",
+          "kind": "texts",
+          "version": "2026.10.11-1",
+          "file": "packs/pt_br/pt_br-texts.bin",
+          "sizeBytes": 4200000,
+          "sha256": "7cdc5f1ccae333daae82d0eaa538f933386e7e7d3cb10f7821b375849fde9774",
+          "required": true,
+          "dummy": true
+        },
+        {
+          "id": "pt_br-sprites",
+          "kind": "sprites",
+          "version": "2026.10.11-1",
+          "file": "packs/pt_br/pt_br-sprites.bin",
+          "sizeBytes": 1313000,
+          "sha256": "cc995b8e5d05a788f505e3f3b7b8e8ac252246747db1d9c59338ea9f9f2f18c2",
+          "required": false,
+          "dummy": true
+        }
+      ]
+    },
+    "no": {
+      "packs": [
+        {
+          "id": "no-texts",
+          "kind": "texts",
+          "version": "2026.10.11-1",
+          "file": "packs/no/no-texts.bin",
+          "sizeBytes": 4297000,
+          "sha256": "19709d864c74d7e8181434c080b5a6a4f1ff0a315c7487fdf2d863b1a685dc6c",
+          "required": true,
+          "dummy": true
+        },
+        {
+          "id": "no-sprites",
+          "kind": "sprites",
+          "version": "2026.10.11-1",
+          "file": "packs/no/no-sprites.bin",
+          "sizeBytes": 1410000,
+          "sha256": "628ec6848a712b30978ea90a87a954a446f67b60ac94a76f86e7fffe27fbc8a7",
+          "required": false,
+          "dummy": true
+        }
+      ]
+    },
+    "tr": {
+      "packs": [
+        {
+          "id": "tr-texts",
+          "kind": "texts",
+          "version": "2026.10.11-1",
+          "file": "packs/tr/tr-texts.bin",
+          "sizeBytes": 4394000,
+          "sha256": "25c05dfdafba376873426171af94853f7bc91c2041145babbb932a0597ec2129",
+          "required": true,
+          "dummy": true
+        },
+        {
+          "id": "tr-sprites",
+          "kind": "sprites",
+          "version": "2026.10.11-1",
+          "file": "packs/tr/tr-sprites.bin",
+          "sizeBytes": 1507000,
+          "sha256": "469c9ca12ec4b8372c55aca57f239de06aa15ebbf6c643ce27dcbfe9b21d8494",
+          "required": false,
+          "dummy": true
+        }
+      ]
+    },
+    "ja": {
+      "packs": [
+        {
+          "id": "ja-texts",
+          "kind": "texts",
+          "version": "2026.10.11-1",
+          "file": "packs/ja/ja-texts.bin",
+          "sizeBytes": 4491000,
+          "sha256": "0c0cd36204b8263c58ce5ebc1e2a4d74ca12ea75d142025e94d8b6bc8a5bb3b6",
+          "required": true,
+          "dummy": true
+        },
+        {
+          "id": "ja-sprites",
+          "kind": "sprites",
+          "version": "2026.10.11-1",
+          "file": "packs/ja/ja-sprites.bin",
+          "sizeBytes": 1604000,
+          "sha256": "92edadc5d4bc85fcf5f828b91a3d8fde11543b76c44d6d6585da4a927940b4fc",
+          "required": false,
+          "dummy": true
+        },
+        {
+          "id": "ja-charImages",
+          "kind": "charImages",
+          "version": "2026.10.11-1",
+          "file": "packs/ja/ja-charImages.bin",
+          "sizeBytes": 6817000,
+          "sha256": "26bdde50db595968fd25f60b0ab2ce8ac8bf8c0384c3b74825bd1b297bd3892c",
+          "required": true,
+          "dummy": true
+        }
+      ]
+    },
+    "zh": {
+      "packs": [
+        {
+          "id": "zh-texts",
+          "kind": "texts",
+          "version": "2026.10.11-1",
+          "file": "packs/zh/zh-texts.bin",
+          "sizeBytes": 4588000,
+          "sha256": "137350b1c34ae881d8ed1a79f467bd978ea9f2185d07c50e29c42422b9419896",
+          "required": true,
+          "dummy": true
+        },
+        {
+          "id": "zh-sprites",
+          "kind": "sprites",
+          "version": "2026.10.11-1",
+          "file": "packs/zh/zh-sprites.bin",
+          "sizeBytes": 1701000,
+          "sha256": "dfc1ef60c65bb011b5e4ed02adaeb15dbf7307931f229b705787b2e5756748e1",
+          "required": false,
+          "dummy": true
+        },
+        {
+          "id": "zh-charImages",
+          "kind": "charImages",
+          "version": "2026.10.11-1",
+          "file": "packs/zh/zh-charImages.bin",
+          "sizeBytes": 6914000,
+          "sha256": "7833a8cb7a8183afef1e18be63294a33afe725f71ba832727217067d6d305f53",
+          "required": true,
+          "dummy": true
+        }
+      ]
+    },
+    "ru": {
+      "packs": [
+        {
+          "id": "ru-texts",
+          "kind": "texts",
+          "version": "2026.10.11-1",
+          "file": "packs/ru/ru-texts.bin",
+          "sizeBytes": 4685000,
+          "sha256": "54c80fb7522f03409961ac7bd33e18e81f0a6c59b56768b0310b9d7023fd8bd4",
+          "required": true,
+          "dummy": true
+        },
+        {
+          "id": "ru-sprites",
+          "kind": "sprites",
+          "version": "2026.10.11-1",
+          "file": "packs/ru/ru-sprites.bin",
+          "sizeBytes": 1798000,
+          "sha256": "c09a331d65b96da86a0ac9780887ac5349d7ebb8f4f90c2c247687e02260eaf6",
+          "required": false,
+          "dummy": true
+        },
+        {
+          "id": "ru-charImages",
+          "kind": "charImages",
+          "version": "2026.10.11-1",
+          "file": "packs/ru/ru-charImages.bin",
+          "sizeBytes": 7011000,
+          "sha256": "958a4169763ec041372baf74e24d2b9c64613d2a46594896246223c750a2c823",
+          "required": true,
+          "dummy": true
+        }
+      ]
+    }
+  }
+}
