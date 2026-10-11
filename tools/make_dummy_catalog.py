@@ -13,7 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CATALOG = os.path.join(ROOT, "catalog.json")
 
 # idiomas com pack local hoje no plugin; cjk = precisa de imagens de caracteres
-LANGS = {"pt_br": False, "no": False, "tr": False, "ja": True, "zh": True, "ru": True}
+LANGS = {"pt_br": False, "no": False, "tr": False, "ja": True, "zh": True, "ru": True, "pt": False, "es": False}
 # kind -> (tamanho base em bytes, obrigatório, só cjk)
 KINDS = {
     "texts":      (4_200_000, True,  False),

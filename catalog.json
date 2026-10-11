@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-11T19:11:37+00:00",
+  "generatedAt": "2026-10-11T19:40:15+00:00",
   "note": "DUMMY packs for download-manager simulation. Content is random bytes.",
   "languages": {
     "pt_br": {
@@ -173,6 +173,54 @@
           "sizeBytes": 7011000,
           "sha256": "958a4169763ec041372baf74e24d2b9c64613d2a46594896246223c750a2c823",
           "required": true,
+          "dummy": true
+        }
+      ]
+    },
+    "pt": {
+      "packs": [
+        {
+          "id": "pt-texts",
+          "kind": "texts",
+          "version": "2026.10.11-1",
+          "file": "packs/pt/pt-texts.bin",
+          "sizeBytes": 4782000,
+          "sha256": "9f30cea5cc8afed4a930022cd0ac6af01feb527968e71bec097b46dd5177a030",
+          "required": true,
+          "dummy": true
+        },
+        {
+          "id": "pt-sprites",
+          "kind": "sprites",
+          "version": "2026.10.11-1",
+          "file": "packs/pt/pt-sprites.bin",
+          "sizeBytes": 1895000,
+          "sha256": "1218675b1322d90ef5066a7af5f7b47d4c188387cd83396b91274fa780dd99ff",
+          "required": false,
+          "dummy": true
+        }
+      ]
+    },
+    "es": {
+      "packs": [
+        {
+          "id": "es-texts",
+          "kind": "texts",
+          "version": "2026.10.11-1",
+          "file": "packs/es/es-texts.bin",
+          "sizeBytes": 4879000,
+          "sha256": "5ef5bb4e5d2ffdbdbd7b00cbd66d15b5dcf1c7a6c4fcd06435b682b8c5b7bade",
+          "required": true,
+          "dummy": true
+        },
+        {
+          "id": "es-sprites",
+          "kind": "sprites",
+          "version": "2026.10.11-1",
+          "file": "packs/es/es-sprites.bin",
+          "sizeBytes": 1992000,
+          "sha256": "f1e58abea77b58ee7386fa04a5dbf5c3f1283bb4dad751545dadfbbca13e5988",
+          "required": false,
           "dummy": true
         }
       ]
